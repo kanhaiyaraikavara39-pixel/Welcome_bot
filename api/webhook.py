@@ -1,5 +1,4 @@
 import json
-import os
 import random
 import requests
 from http.server import BaseHTTPRequestHandler
@@ -8,82 +7,78 @@ from http.server import BaseHTTPRequestHandler
 BOT_TOKEN = "8820307548:AAESeTJkFrwJU4oqLOov5n0ydr11XU0pO6o"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
+# YouTube Channel Link
+YOUTUBE_LINK = "https://youtube.com/@s.kanhaiya.7m"
+
+# Subscribe line (Roman Hindi — same for all)
+SUBSCRIBE_LINE = f"Kya tumne channel subscribe kiya?\n👉 {YOUTUBE_LINK}"
+
 
 # ============================================================
 # GROUP WELCOME MESSAGES (English + Hindi)
 # ============================================================
 GROUP_MESSAGES_EN = [
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hello {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hello {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "Glad you're here ✨\n"
-    "Feel free to chat 💬",
+    "✦ ─────────────────── ✦\n\n"
+    "Glad you're here ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hey {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hey {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "So happy to have you ✨\n"
-    "Jump in and say hi 💬",
+    "✦ ─────────────────── ✦\n\n"
+    "So happy to have you ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hi {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hi {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "You made it here ✨\n"
-    "Enjoy your stay 🌸",
+    "✦ ─────────────────── ✦\n\n"
+    "Great to see you ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hello {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hello {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "Great to see you ✨\n"
-    "Be active and enjoy 🚀",
+    "✦ ─────────────────── ✦\n\n"
+    "You made it here ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hey {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hey {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "You're part of us now ✨\n"
-    "Let's have fun together 🎉",
+    "✦ ─────────────────── ✦\n\n"
+    "You're part of us now ✨",
 ]
 
 GROUP_MESSAGES_HI = [
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपका आना अच्छा लगा ✨\n"
-    "बेझिझक बात करें 💬",
+    "✦ ─────────────────── ✦\n\n"
+    "आपका आना अच्छा लगा ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में स्वागत है\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपसे मिलकर खुशी हुई ✨\n"
-    "बातचीत में शामिल हों 💬",
+    "✦ ─────────────────── ✦\n\n"
+    "आपको देखकर खुशी हुई ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     हेलो {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   हेलो {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आप यहाँ आ गए ✨\n"
-    "खूब मज़ा करें 🌸",
+    "✦ ─────────────────── ✦\n\n"
+    "आपसे मिलकर अच्छा लगा ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपको देखकर अच्छा लगा ✨\n"
-    "सक्रिय रहें और मज़े करें 🚀",
+    "✦ ─────────────────── ✦\n\n"
+    "आप यहाँ आ गए ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     हेलो {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   हेलो {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "अब आप हमारे परिवार का हिस्सा हैं ✨\n"
-    "चलो साथ में मज़ा करें 🎉",
+    "✦ ─────────────────── ✦\n\n"
+    "अब आप हमारे परिवार का हिस्सा हैं ✨",
 ]
 
 
@@ -91,84 +86,74 @@ GROUP_MESSAGES_HI = [
 # CHANNEL WELCOME MESSAGES (English + Hindi)
 # ============================================================
 CHANNEL_MESSAGES_EN = [
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hello {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hello {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "Glad you're here ✨\n"
-    "Thanks for subscribing 💫",
+    "✦ ─────────────────── ✦\n\n"
+    "Glad you're here ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hey {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hey {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "So happy to have you ✨\n"
-    "Stay tuned for updates 🔔",
+    "✦ ─────────────────── ✦\n\n"
+    "So happy to have you ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hi {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hi {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "You made it here ✨\n"
-    "Thanks for joining 💫",
+    "✦ ─────────────────── ✦\n\n"
+    "Great to see you ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hello {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hello {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "Great to see you ✨\n"
-    "Enjoy the content 🚀",
+    "✦ ─────────────────── ✦\n\n"
+    "You made it here ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     Hey {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   Hey {name} 👋\n"
     "   Welcome to {chat}\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "You're part of us now ✨\n"
-    "More amazing stuff coming 🌟",
+    "✦ ─────────────────── ✦\n\n"
+    "You're part of us now ✨",
 ]
 
 CHANNEL_MESSAGES_HI = [
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपका आना अच्छा लगा ✨\n"
-    "जॉइन करने के लिए शुक्रिया 💫",
+    "✦ ─────────────────── ✦\n\n"
+    "आपका आना अच्छा लगा ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में स्वागत है\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपसे मिलकर खुशी हुई ✨\n"
-    "नई अपडेट्स के लिए तैयार रहें 🔔",
+    "✦ ─────────────────── ✦\n\n"
+    "आपको देखकर खुशी हुई ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     हेलो {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   हेलो {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आप यहाँ आ गए ✨\n"
-    "जॉइन करने के लिए धन्यवाद 💫",
+    "✦ ─────────────────── ✦\n\n"
+    "आपसे मिलकर अच्छा लगा ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     नमस्ते {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   नमस्ते {name} 👋\n"
     "   {chat} में स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "आपको देखकर अच्छा लगा ✨\n"
-    "कंटेंट का मज़ा लें 🚀",
+    "✦ ─────────────────── ✦\n\n"
+    "आप यहाँ आ गए ✨",
 
-    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-    "     हेलो {name} 👋\n"
+    "✦ ─────────────────── ✦\n"
+    "   हेलो {name} 👋\n"
     "   {chat} में आपका स्वागत\n"
-    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-    "अब आप हमारे परिवार का हिस्सा हैं ✨\n"
-    "और मज़ेदार चीज़ें आ रही हैं 🌟",
+    "✦ ─────────────────── ✦\n\n"
+    "अब आप हमारे परिवार का हिस्सा हैं ✨",
 ]
 
 
 def send_welcome_message(chat_id, user_name, chat_title, is_channel=False):
     """
     Random English या Hindi message चुनकर भेजता है।
-    Group और Channel के लिए अलग template use होते हैं।
+    साथ में YouTube subscribe line भी जोड़ता है।
     """
     # English या Hindi — random pick
     use_hindi = random.choice([True, False])
@@ -179,9 +164,17 @@ def send_welcome_message(chat_id, user_name, chat_title, is_channel=False):
         templates = GROUP_MESSAGES_HI if use_hindi else GROUP_MESSAGES_EN
 
     template = random.choice(templates)
-    text = template.format(name=user_name, chat=chat_title)
+    welcome_text = template.format(name=user_name, chat=chat_title)
 
-    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+    # Welcome + Subscribe line जोड़ो
+    full_text = f"{welcome_text}\n\n{SUBSCRIBE_LINE}"
+
+    payload = {
+        "chat_id": chat_id,
+        "text": full_text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True,   # thumbnail नहीं दिखेगा
+    }
     try:
         requests.post(f"{TELEGRAM_API_URL}/sendMessage", json=payload, timeout=5)
     except Exception as err:
