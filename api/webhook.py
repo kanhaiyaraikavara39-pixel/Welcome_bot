@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import requests
 from http.server import BaseHTTPRequestHandler
 
@@ -8,19 +9,177 @@ BOT_TOKEN = "8820307548:AAESeTJkFrwJU4oqLOov5n0ydr11XU0pO6o"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 
+# ============================================================
+# GROUP WELCOME MESSAGES (English + Hindi)
+# ============================================================
+GROUP_MESSAGES_EN = [
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hello {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "Glad you're here ✨\n"
+    "Feel free to chat 💬",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hey {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "So happy to have you ✨\n"
+    "Jump in and say hi 💬",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hi {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "You made it here ✨\n"
+    "Enjoy your stay 🌸",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hello {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "Great to see you ✨\n"
+    "Be active and enjoy 🚀",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hey {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "You're part of us now ✨\n"
+    "Let's have fun together 🎉",
+]
+
+GROUP_MESSAGES_HI = [
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपका आना अच्छा लगा ✨\n"
+    "बेझिझक बात करें 💬",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में स्वागत है\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपसे मिलकर खुशी हुई ✨\n"
+    "बातचीत में शामिल हों 💬",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     हेलो {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आप यहाँ आ गए ✨\n"
+    "खूब मज़ा करें 🌸",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपको देखकर अच्छा लगा ✨\n"
+    "सक्रिय रहें और मज़े करें 🚀",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     हेलो {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "अब आप हमारे परिवार का हिस्सा हैं ✨\n"
+    "चलो साथ में मज़ा करें 🎉",
+]
+
+
+# ============================================================
+# CHANNEL WELCOME MESSAGES (English + Hindi)
+# ============================================================
+CHANNEL_MESSAGES_EN = [
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hello {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "Glad you're here ✨\n"
+    "Thanks for subscribing 💫",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hey {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "So happy to have you ✨\n"
+    "Stay tuned for updates 🔔",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hi {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "You made it here ✨\n"
+    "Thanks for joining 💫",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hello {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "Great to see you ✨\n"
+    "Enjoy the content 🚀",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     Hey {name} 👋\n"
+    "   Welcome to {chat}\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "You're part of us now ✨\n"
+    "More amazing stuff coming 🌟",
+]
+
+CHANNEL_MESSAGES_HI = [
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपका आना अच्छा लगा ✨\n"
+    "जॉइन करने के लिए शुक्रिया 💫",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में स्वागत है\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपसे मिलकर खुशी हुई ✨\n"
+    "नई अपडेट्स के लिए तैयार रहें 🔔",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     हेलो {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आप यहाँ आ गए ✨\n"
+    "जॉइन करने के लिए धन्यवाद 💫",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     नमस्ते {name} 👋\n"
+    "   {chat} में स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "आपको देखकर अच्छा लगा ✨\n"
+    "कंटेंट का मज़ा लें 🚀",
+
+    "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+    "     हेलो {name} 👋\n"
+    "   {chat} में आपका स्वागत\n"
+    "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+    "अब आप हमारे परिवार का हिस्सा हैं ✨\n"
+    "और मज़ेदार चीज़ें आ रही हैं 🌟",
+]
+
+
 def send_welcome_message(chat_id, user_name, chat_title, is_channel=False):
+    """
+    Random English या Hindi message चुनकर भेजता है।
+    Group और Channel के लिए अलग template use होते हैं।
+    """
+    # English या Hindi — random pick
+    use_hindi = random.choice([True, False])
+
     if is_channel:
-        text = (
-            f"🎉 <b>New Subscriber Alert!</b> 🎉\n\n"
-            f"🌟 <b>{user_name}</b> ने <b>{chat_title}</b> जॉइन कर लिया है!\n"
-            f"हमारे चैनल में आपका स्वागत है। 🚀"
-        )
+        templates = CHANNEL_MESSAGES_HI if use_hindi else CHANNEL_MESSAGES_EN
     else:
-        text = (
-            f"✨ <b>Welcome to {chat_title}!</b> ✨\n\n"
-            f"👋 नमस्ते <b>{user_name}</b>, ग्रुप में आपका स्वागत है! 🔥\n"
-            f"📌 ग्रुप में एक्टिव रहें और नियमों का पालन करें।"
-        )
+        templates = GROUP_MESSAGES_HI if use_hindi else GROUP_MESSAGES_EN
+
+    template = random.choice(templates)
+    text = template.format(name=user_name, chat=chat_title)
 
     payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     try:
@@ -42,11 +201,11 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             return
 
-        # 1. ग्रुप में साधारण जॉइन इवेंट चेक करें
+        # 1. Group में साधारण join event
         if "message" in update and "new_chat_members" in update["message"]:
             msg = update["message"]
             chat_id = msg["chat"]["id"]
-            chat_title = msg["chat"].get("title", "our group")
+            chat_title = msg["chat"].get("title", "the community")
 
             for member in msg["new_chat_members"]:
                 if member.get("is_bot"):
@@ -56,7 +215,7 @@ class handler(BaseHTTPRequestHandler):
                     chat_id, name, chat_title, is_channel=False
                 )
 
-        # 2. चैनल या एडवांस्ड ग्रुप जॉइन (Chat Member Update)
+        # 2. Channel या advanced group join (Chat Member Update)
         elif "chat_member" in update:
             cm = update["chat_member"]
             chat = cm["chat"]
